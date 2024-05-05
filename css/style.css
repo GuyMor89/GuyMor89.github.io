@@ -1,0 +1,161 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    text-align: center;
+    font-family: 'minesweeper', Arial, sans-serif;
+    background-color: rgb(118, 121, 139);
+}
+
+
+@font-face {
+    font-family: 'minesweeper';
+    src: url('font.otf') format('OpenType');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'timer';
+    src: url('timer.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+h1 {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border-radius: 10px;
+    margin: auto;
+    font-size: 25px;
+    border-color: black;
+    border-width: 5px;
+    border-style: solid;
+    align-items: center;
+    box-shadow: white 3px 3px;
+    width: 330px
+}
+
+.dashboard {
+    width: 340px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 50px;
+    padding: 5px;
+    border-collapse: separate;
+    background-color: #c0c0c0;
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-bottom: 5px solid #7b7b7b;
+    border-right: 5px solid #7b7b7b;  
+    text-align: justify;
+    white-space: nowrap;
+    overflow: hidden;  
+}
+
+.mine-counter {
+    font-family: 'timer';
+    font-size: 30px;
+    background-color: rgb(0, 0, 0);
+    width: 75px;
+    height: 45px;
+    display: flex;                    /* Added to align the span in the center */
+    justify-content: center;         /* Center horizontally */
+    align-items: center;             /* Center vertically */
+}
+
+span {
+    color: rgb(215, 55, 55);         /* Specific text color for the span */
+    -webkit-transform: scale(1,1.35);   /* Scale for WebKit browsers */
+    transform: scale(1,1.35);           /* Scale normally */
+}
+
+
+.timer {
+    font-family: 'timer';
+    font-size: 30px;
+    display: flex;
+    justify-content: center ;
+    align-items: center;
+    /* border: 3px solid white; */
+    color: rgb(228, 60, 60);
+    background-color: rgb(0, 0, 0);
+    position: relative;
+    width: 75px;
+    height: 45px;
+}
+
+.smiley {
+    font-family: 'timer';
+    font-size: 30px;
+    /* border: 3px solid white; */
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-bottom: 5px solid #7b7b7b;
+    border-right: 5px solid #7b7b7b;
+    position: relative;
+    width: 45px;
+    height: 45px;
+    
+}
+
+.board-border {
+    width: 340px;
+    margin: auto;
+    padding: 2px;
+    border-collapse: separate;
+    background-color: #c0c0c0;
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-bottom: 5px solid #7b7b7b;
+    border-right: 5px solid #7b7b7b;
+
+}
+
+.board-container {
+    position: relative;
+    padding: 2px;
+    width: 327px;
+    border-collapse: separate;
+    background-color: rgb(192, 192, 192); /* Use this to change inner border */
+    border-top: 5px solid rgb(192, 192, 192);
+    border-left: 5px solid rgb(192, 192, 192);
+    border-bottom: 5px solid rgb(192, 192, 192);
+    border-right: 5px solid rgb(192, 192, 192);
+}
+
+.board {
+    background-color: rgb(192, 192, 192);
+
+}
+
+.cell {
+    font-size: 25px;
+    border-style: ridge;
+    background-color: rgb(192, 192, 192);
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-bottom: 5px solid #7b7b7b;
+    border-right: 5px solid #7b7b7b;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+
+}
+
+.cell img {
+margin-top: 3.5px;
+
+}
+
+.shown {
+    border-width: 0px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1)
+
+}
+
+.explode {
+    background-color: red;
+}

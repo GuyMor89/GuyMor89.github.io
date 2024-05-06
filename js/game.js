@@ -7,22 +7,32 @@ var gMineCounterDOM = document.querySelector('.mine-counter span')
 var gSmileyDOM = document.querySelector('.smiley')
 var gCheckedCells = []
 var gTimerInterval
-var amountOfFlags = 4
+var amountOfFlags
 var isGameOn = true
 var isDead = false
 var hasTimerBeenStarted = false
+var livesLeft = 3
 
 const MINE = '<img src="img/mine.png"></img>'
 const FLAG = '<img src="img/flag.png"></img>'
-const amountOfMines = 4
+var boardRows = 7
+var boardCols = 8
+var amountOfMines
 
 function onInit() {
+
+    amountOfMines = Math.round((boardRows * boardCols) * 0.15)
+
     gBoard = createBoard()
     renderBoard(gBoard)
+    adjustBoardWidth()
 
     isGameOn = true
     isDead = false
-    amountOfFlags = 4
+    amountOfFlags = amountOfMines
+
+    livesLeft = 3
+    lifeCounter()
 
     gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>'
 
@@ -32,15 +42,42 @@ function onInit() {
 
     hasTimerBeenStarted = false
     stopTimer()
+}
+
+function changeBoardSize() {
+    boardRows = submitRows()
+    boardCols = submitCols()
+    onInit()
+}
+
+function lifeCounter() {
+
+    var strHTML = ''
+    var life = '<img src="img/grin.png"></img>'
+    var lifeLost = '<img src="img/frown.png"></img>'
+
+    for (let i = 0; i < 3; i++) {
+        if (i < livesLeft) {
+            strHTML += ' '
+            strHTML += life
+        } else {
+            strHTML += ' '
+            strHTML += lifeLost
+        }
+    }
+
+    var lifeCounterBox = document.querySelector('.life-counter-box')
+
+    lifeCounterBox.innerHTML = strHTML
 
 }
 
 function createBoard() {
     var board = []
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < boardRows; i++) {
         board[i] = []
-        for (let j = 0; j < 6; j++) {
+        for (let j = 0; j < boardCols; j++) {
             board[i][j] = {
                 minesAroundCell: 0,
                 isShown: false,
@@ -71,6 +108,17 @@ function renderBoard(board) {
     }
 }
 
+function adjustBoardWidth() {
+    var elBoardBorder = document.querySelector('.board-border')
+    var elDashboard1 = document.querySelector('.dashboard')
+    var elDashboard2 = document.querySelector('.dashboard2')
+
+    elBoardBorder.style.width = `${boardCols * 50 + 40}px`
+    elDashboard1.style.width = `${boardCols * 50 + 40}px`
+    elDashboard2.style.width = `${boardCols * 50 + 40}px`
+
+}
+
 var cellContent = ''
 
 function cellClicked(elCell, event) {
@@ -85,7 +133,7 @@ function cellClicked(elCell, event) {
     if (!hasTimerBeenStarted) startTimer()
     hasTimerBeenStarted = true
 
-    if (event.ctrlKey && event.button === 0 && elCell.classList.value !== 'cell shown') {
+    if (event.ctrlKey && event.button === 0 && !gBoard[cell.i][cell.j].isShown) {
         if (!gBoard[i][j].isFlagged) cellContent = elCell.innerHTML
         if (gBoard[i][j].isFlagged) {
             gBoard[i][j].isFlagged = false
@@ -113,13 +161,23 @@ function cellClicked(elCell, event) {
         elCell.innerHTML = gBoard[i][j].minesAroundCell
         colorCells(elCell)
 
-    } else if (gBoard[i][j].isMine) {
+    } else if (gBoard[i][j].isMine && livesLeft > 0 && !gBoard[i][j].isShown) {
+        livesLeft--
+        lifeCounter()
+        elCell.innerHTML = MINE
+        gBoard[cell.i][cell.j].isShown = true
+        document.querySelector(`td[data-i="${cell.i}"][data-j="${cell.j}"]`).classList.add('explode')
+
+    } else if (livesLeft === 0) {
+        console.log('Game Over');
         revealMines(cell)
         isDead = true
         isGameOn = false
+        clearInterval(gTimerInterval)
     }
-console.log(cell);
-    if (gameOver(cell)) {
+
+    if (youWin()) {
+        console.log('You win')
         isGameOn = false
         clearInterval(gTimerInterval)
     }
@@ -161,7 +219,7 @@ function showCells(cell) {
         for (let i = (X - 1); i <= (X + 1); i++) {
             if (i >= 0 && i < gBoard.length) {
                 for (let j = Y - 1; j <= Y + 1; j++) {
-                    if (j >= 0 && j < gBoard.length) {
+                    if (j >= 0 && j < gBoard[i].length) {
                         if (!gBoard[i][j].isMine) {
 
                             var curCellDOM = document.querySelector(`td[data-i="${i}"][data-j="${j}"]`)
@@ -181,6 +239,7 @@ function showCells(cell) {
     return
 }
 
+
 function colorCells(elCell) {
     if (elCell.innerHTML === '0') elCell.style.color = '#c0c0c0'
     if (elCell.innerHTML === '1') elCell.style.color = 'blue'
@@ -189,13 +248,13 @@ function colorCells(elCell) {
 }
 
 
-function changeSmiley(cell) {
+function changeSmiley() {
 
     if (isDead) {
         gSmileyDOM.innerHTML = '<img src="img/dead.png"></img>'
         return
     }
-    else if (gameOver(cell)) {
+    else if (youWin()) {
         gSmileyDOM.innerHTML = '<img src="img/cool.png"></img>'
         return
     } else if ((gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>')) {
@@ -209,11 +268,10 @@ function changeSmiley(cell) {
 }
 
 
-function gameOver(cell) {
-console.log(cell);
+function youWin() {
     var flaggedMines = 0
     var shownCells = 0
-    var gameIsOver = false
+    var youWin = false
 
     for (let i = 0; i < gBoard.length; i++) {
         for (let j = 0; j < gBoard[i].length; j++) {
@@ -221,15 +279,23 @@ console.log(cell);
             if (gBoard[i][j].isShown) shownCells++
         }
     }
-
     if (flaggedMines === amountOfMines &&
-        shownCells === ((gBoard.length ** 2) - amountOfMines)) gameIsOver = true
+        shownCells === ((boardRows * boardCols) - amountOfMines)) youWin = true
 
-    if (gBoard[cell.i][cell.j].isMine &&
-        !gBoard[cell.i][cell.j].isFlagged) gameIsOver = true
-
-    return gameIsOver
+    return youWin
 }
+
+
+// function gameOver(cell) {
+
+//     var gameIsOver = false
+
+//     if (gBoard[cell.i][cell.j].isMine &&
+//         !gBoard[cell.i][cell.j].isFlagged &&
+//         livesLeft === 0) gameIsOver = true
+
+//     return gameIsOver
+// }
 
 
 var cellsWithMinesModel = []
@@ -240,12 +306,12 @@ function revealMines(cell) {
 
     for (let i = 0; i < gBoard.length; i++) {
         for (let j = 0; j < gBoard[i].length; j++) {
-            if (gBoard[i][j].isMine) cellsWithMinesModel.push({i,j})
+            if (gBoard[i][j].isMine) cellsWithMinesModel.push({ i, j })
         }
     }
 
     for (let i = 0; i < cellsWithMinesModel.length; i++) {
-        var cellsWithMinesDOM = document.querySelector(`td[data-i="${cellsWithMinesModel[i].i}"][data-j="${cellsWithMinesModel[i].j}"]`)     
+        var cellsWithMinesDOM = document.querySelector(`td[data-i="${cellsWithMinesModel[i].i}"][data-j="${cellsWithMinesModel[i].j}"]`)
         cellsWithMinesDOM.innerHTML = MINE
     }
 

@@ -42,17 +42,17 @@ h1 {
     margin: auto;
     display: flex;
     justify-content: space-around;
-    margin-top: 50px;
     padding: 5px;
+    margin-top: 40px;
     border-collapse: separate;
     background-color: #c0c0c0;
-    border-top: 5px solid #ffffff;
-    border-left: 5px solid #ffffff;
-    border-bottom: 5px solid #7b7b7b;
-    border-right: 5px solid #7b7b7b;  
+    border-top: 10px solid #ffffff;
+    border-left: 10px solid #ffffff;
+    border-bottom: 10px solid #7b7b7b;
+    border-right: 10px solid #7b7b7b;
     text-align: justify;
     white-space: nowrap;
-    overflow: hidden;  
+    overflow: hidden;
 }
 
 .mine-counter {
@@ -61,15 +61,15 @@ h1 {
     background-color: rgb(0, 0, 0);
     width: 75px;
     height: 45px;
-    display: flex;                    /* Added to align the span in the center */
-    justify-content: center;         /* Center horizontally */
-    align-items: center;             /* Center vertically */
+    display: flex; /* Added to align the span in the center */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 span {
-    color: rgb(215, 55, 55);         /* Specific text color for the span */
-    -webkit-transform: scale(1,1.35);   /* Scale for WebKit browsers */
-    transform: scale(1,1.35);           /* Scale normally */
+    color: rgb(215, 55, 55); /* Specific text color for the span */
+    -webkit-transform: scale(1, 1.35); /* Scale for WebKit browsers */
+    transform: scale(1, 1.35); /* Scale normally */
 }
 
 
@@ -77,9 +77,8 @@ span {
     font-family: 'timer';
     font-size: 30px;
     display: flex;
-    justify-content: center ;
-    align-items: center;
-    /* border: 3px solid white; */
+    justify-content: center;
+    align-items: center; /* border: 3px solid white; */
     color: rgb(228, 60, 60);
     background-color: rgb(0, 0, 0);
     position: relative;
@@ -89,8 +88,7 @@ span {
 
 .smiley {
     font-family: 'timer';
-    font-size: 30px;
-    /* border: 3px solid white; */
+    font-size: 30px; /* border: 3px solid white; */
     border-top: 5px solid #ffffff;
     border-left: 5px solid #ffffff;
     border-bottom: 5px solid #7b7b7b;
@@ -98,40 +96,112 @@ span {
     position: relative;
     width: 45px;
     height: 45px;
-    
+    cursor: pointer;
+
 }
 
-.board-border {
+.dashboard2 {
     width: 340px;
     margin: auto;
-    padding: 2px;
+    display: flex;
+    justify-content: flex-start;
+    padding: 5px;
     border-collapse: separate;
     background-color: #c0c0c0;
+    text-align: justify;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.input-wrapper {
+    margin-left: 5%;
+    margin-right: 5%;
+    display: flex;
+    justify-content: flex-start; /* Align children to the left */
+
+}
+
+.number-box {
+    font-family: 'minesweeper', Arial, sans-serif;
+    text-align: center;
+    color: black;
+    background-color: #c0c0c0;
+    margin-right: 10px;
+    width: 60px;
+    height: 45px;
     border-top: 5px solid #ffffff;
     border-left: 5px solid #ffffff;
     border-bottom: 5px solid #7b7b7b;
     border-right: 5px solid #7b7b7b;
+}
 
+.number-box::-webkit-inner-spin-button,
+.number-box::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.number-box::placeholder {
+    color: rgb(78, 78, 78); /* Set your desired placeholder text color here */
+}
+
+.image-container {
+    position: relative; /* Establishes a positioning context */
+    width: 131px; /* Set to required width, or match to image width */
+    height: auto; /* Adjust height based on content */
+}
+
+.life-counter-box {
+    justify-content: flex-start;
+    margin-left: 5%;
+    width: 131px;
+    height: 47px;
+    border-top: 5px solid #ffffff;
+    border-left: 5px solid #ffffff;
+    border-bottom: 5px solid #7b7b7b;
+    border-right: 5px solid #7b7b7b;
+}
+
+
+
+.board-border {
+    width: 340px;
+    margin: 0 auto;
+    display: flex; /* Using Flexbox to shrink-wrap the div to its contents */
+    justify-content: center; /* Center the child horizontally */
+    align-items: center; /* Center the child vertically */
+    padding: 2px;
+    background-color: #c0c0c0;
+    border-top: 10px solid #ffffff;
+    border-left: 10px solid #ffffff;
+    border-bottom: 10px solid #7b7b7b;
+    border-right: 10px solid #7b7b7b;
 }
 
 .board-container {
-    position: relative;
+    display: table;
+    max-width: 947px;
+    width: 100%; /* Make the board-container take full width of its parent by default */
+    table-layout: fixed; /* Enforces fixed column widths */
+    margin: auto; /* Centering if needed */
     padding: 2px;
-    width: 327px;
+    background-color: rgb(192, 192, 192);
+    border: 5px solid rgb(192, 192, 192);
     border-collapse: separate;
-    background-color: rgb(192, 192, 192); /* Use this to change inner border */
-    border-top: 5px solid rgb(192, 192, 192);
-    border-left: 5px solid rgb(192, 192, 192);
-    border-bottom: 5px solid rgb(192, 192, 192);
-    border-right: 5px solid rgb(192, 192, 192);
+    overflow: auto;
 }
 
+
+
 .board {
+    /* max-width: 947px; */
+    display: table-row-group;
     background-color: rgb(192, 192, 192);
 
 }
 
 .cell {
+    display: table-cell;
     font-size: 25px;
     border-style: ridge;
     background-color: rgb(192, 192, 192);
@@ -139,21 +209,21 @@ span {
     border-left: 5px solid #ffffff;
     border-bottom: 5px solid #7b7b7b;
     border-right: 5px solid #7b7b7b;
-    width: 50px;
+    width: 45px;
+    min-width: 45px;
     height: 50px;
     cursor: pointer;
-
+    white-space: nowrap
 }
 
 .cell img {
-margin-top: 3.5px;
+    margin-top: 3.5px;
 
 }
 
 .shown {
     border-width: 0px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1)
-
 }
 
 .explode {

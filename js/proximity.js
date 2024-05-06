@@ -9,7 +9,7 @@ function findNearbyMines(cell) {
     for (let i = (X - 1); i <= (X + 1); i++) {
         if (i >= 0 && i < gBoard.length) {
             for (let j = Y - 1; j <= Y + 1; j++) {
-                if (j >= 0 && j < gBoard.length) {
+                if (j >= 0 && j < gBoard[i].length) {
                     if (gBoard[i][j] === gBoard[X][Y]) continue
                     if (gBoard[i][j].isMine) count++
 
@@ -32,7 +32,7 @@ function findNearbyCells(cell) {
     for (let i = (X - 1); i <= (X + 1); i++) {
         if (i >= 0 && i < gBoard.length) {
             for (let j = Y - 1; j <= Y + 1; j++) {
-                if (j >= 0 && j < gBoard.length) {
+                if (j >= 0 && j < gBoard[i].length) {
                     if (gBoard[i][j] === gBoard[X][Y]) continue
                     nearbyCells.push({ i, j })
 

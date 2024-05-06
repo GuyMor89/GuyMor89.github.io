@@ -12,11 +12,22 @@
 <body onload="onInit()">
 
     <h1>Minesweeper</h1>
-
     <div class="dashboard">
         <div class="mine-counter"><span>000</span></div>
         <div class="smiley" onclick="onInit()"></div>
         <div class="timer"><span>000</span></div>
+    </div>
+
+    <div class="dashboard2">
+
+        <div class="life-counter-box"></div>
+
+        <div class="input-wrapper">
+            <input type="number" class="number-box row" placeholder="Row">
+            <input type="number" class="number-box col" placeholder="Col">
+            <button class="number-box OK" onclick="changeBoardSize()">OK</button>
+        </div>
+        <!-- <div class="timer"><span>000</span></div> -->
     </div>
 
     <div class="board-border">

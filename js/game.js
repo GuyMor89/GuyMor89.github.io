@@ -2,82 +2,54 @@
 
 
 var gBoard
-var haveMinesBeenPlaced = false
-var gMineCounterDOM = document.querySelector('.mine-counter span')
-var gSmileyDOM = document.querySelector('.smiley')
-var gCheckedCells = []
-var gTimerInterval
+
+var timerInterval
 var amountOfFlags
+var amountOfMines
+
 var isGameOn = true
-var isDead = false
+var haveMinesBeenPlaced = false
 var hasTimerBeenStarted = false
+var isHintOn = false
+var hintsLeft = 3
 var livesLeft = 3
 
 const MINE = '<img src="img/mine.png"></img>'
 const FLAG = '<img src="img/flag.png"></img>'
-var boardRows = 7
-var boardCols = 8
-var amountOfMines
+const setBoardSize = {
+    rows: 7,
+    cols: 8
+}
+
 
 function onInit() {
-
-    amountOfMines = Math.round((boardRows * boardCols) * 0.15)
+    amountOfFlags = amountOfMines = Math.round((setBoardSize.rows * setBoardSize.cols) * 0.15)
 
     gBoard = createBoard()
     renderBoard(gBoard)
     adjustBoardWidth()
 
     isGameOn = true
-    isDead = false
-    amountOfFlags = amountOfMines
+    haveMinesBeenPlaced = false
+    hasTimerBeenStarted = false
+    CheckedCells.length = 0
 
     livesLeft = 3
-    lifeCounter()
+    setCounter('life')
 
-    gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>'
+    hintsLeft = 3
+    setCounter('hint')
 
-    gMineCounterDOM.innerText = amountOfFlags.toString().padStart(3, '0')
-    haveMinesBeenPlaced = false
-    gCheckedCells.length = 0
-
-    hasTimerBeenStarted = false
+    resetFlagsAndSmiley()
     stopTimer()
-}
-
-function changeBoardSize() {
-    boardRows = submitRows()
-    boardCols = submitCols()
-    onInit()
-}
-
-function lifeCounter() {
-
-    var strHTML = ''
-    var life = '<img src="img/grin.png"></img>'
-    var lifeLost = '<img src="img/frown.png"></img>'
-
-    for (let i = 0; i < 3; i++) {
-        if (i < livesLeft) {
-            strHTML += ' '
-            strHTML += life
-        } else {
-            strHTML += ' '
-            strHTML += lifeLost
-        }
-    }
-
-    var lifeCounterBox = document.querySelector('.life-counter-box')
-
-    lifeCounterBox.innerHTML = strHTML
-
 }
 
 function createBoard() {
     var board = []
 
-    for (let i = 0; i < boardRows; i++) {
+    for (let i = 0; i < setBoardSize.rows; i++) {
         board[i] = []
-        for (let j = 0; j < boardCols; j++) {
+        for (let j = 0; j < setBoardSize.cols; j++) {
             board[i][j] = {
                 minesAroundCell: 0,
                 isShown: false,
@@ -97,9 +69,9 @@ function renderBoard(board) {
         strHTML += `<tr>`
         for (let j = 0; j < board[i].length; j++) {
 
-            const title = `Cell: ${i}, ${j}`
+            const title = `ModelCell: ${i}, ${j}`
 
-            strHTML += `<td title="${title}" data-i="${i}" data-j="${j}" class="cell" onclick="cellClicked(this, event)"></td>`
+            strHTML += `<td title="${title}" data-i="${i}" data-j="${j}" class="ModelCell" onclick="cellClicked(this, event)"></td>`
         }
         strHTML += `</tr>`
 
@@ -108,128 +80,62 @@ function renderBoard(board) {
     }
 }
 
-function adjustBoardWidth() {
-    var elBoardBorder = document.querySelector('.board-border')
-    var elDashboard1 = document.querySelector('.dashboard')
-    var elDashboard2 = document.querySelector('.dashboard2')
 
-    elBoardBorder.style.width = `${boardCols * 50 + 40}px`
-    elDashboard1.style.width = `${boardCols * 50 + 40}px`
-    elDashboard2.style.width = `${boardCols * 50 + 40}px`
-
-}
-
-var cellContent = ''
-
-function cellClicked(elCell, event) {
+function cellClicked(DOMCell, event) {
 
     if (!isGameOn) return
 
-    var i = +elCell.dataset.i
-    var j = +elCell.dataset.j
+    var ModelCell = shiftCellType(DOMCell)
 
-    var cell = { i, j }
+    if (event.ctrlKey) {
+        rightMouseClick(DOMCell)
 
-    if (!hasTimerBeenStarted) startTimer()
-    hasTimerBeenStarted = true
+    } else leftMouseClick(DOMCell)
 
-    if (event.ctrlKey && event.button === 0 && !gBoard[cell.i][cell.j].isShown) {
-        if (!gBoard[i][j].isFlagged) cellContent = elCell.innerHTML
-        if (gBoard[i][j].isFlagged) {
-            gBoard[i][j].isFlagged = false
-            elCell.innerHTML = cellContent
-
-            if (amountOfFlags >= 0) amountOfFlags += 1
-            gMineCounterDOM.innerText = amountOfFlags.toString().padStart(3, '0')
-
-        } else if (amountOfFlags > 0) {
-            gBoard[i][j].isFlagged = true
-            elCell.innerHTML = FLAG
-
-            if (amountOfFlags > 0) amountOfFlags -= 1
-            gMineCounterDOM.innerText = amountOfFlags.toString().padStart(3, '0')
-        }
-    } else if (!gBoard[i][j].isMine) {
-
-        elCell.classList.add('shown')
-        gBoard[i][j].isShown = true
-
-        if (!haveMinesBeenPlaced) placeMines(elCell)
-
-        showCells(cell)
-
-        elCell.innerHTML = gBoard[i][j].minesAroundCell
-        colorCells(elCell)
-
-    } else if (gBoard[i][j].isMine && livesLeft > 0 && !gBoard[i][j].isShown) {
-        livesLeft--
-        lifeCounter()
-        elCell.innerHTML = MINE
-        gBoard[cell.i][cell.j].isShown = true
-        document.querySelector(`td[data-i="${cell.i}"][data-j="${cell.j}"]`).classList.add('explode')
-
-    } else if (livesLeft === 0) {
-        console.log('Game Over');
-        revealMines(cell)
-        isDead = true
-        isGameOn = false
-        clearInterval(gTimerInterval)
-    }
-
-    if (youWin()) {
-        console.log('You win')
-        isGameOn = false
-        clearInterval(gTimerInterval)
-    }
-
-    changeSmiley(cell)
+    changeSmiley(ModelCell)
 
 }
 
-function placeMines(elCell) {
+function placeMines(DOMCell) {
 
-    var i = +elCell.dataset.i
-    var j = +elCell.dataset.j
+    var ModelCell = shiftCellType(DOMCell)
 
-    var cell = { i, j }
-
-    findEmptyCells(cell)
-    findCellsToPlaceMines(elCell)
-    findMinesOnMap(cell)
+    findCellsToPlaceMines(DOMCell)
+    findMinesOnMap(ModelCell)
 
     haveMinesBeenPlaced = true
 
 }
 
 
-var gCheckedCells = []
+var CheckedCells = []
 
-function showCells(cell) {
+function showCells(ModelCell) {
 
-    var X = cell.i
-    var Y = cell.j
+    var X = ModelCell.i
+    var Y = ModelCell.j
 
-    if (gCheckedCells.some(cell => cell.i === X && cell.j === Y)) {
+    if (CheckedCells.some(ModelCell => ModelCell.i === X && ModelCell.j === Y)) {
         return
     }
 
-    gCheckedCells.push({ i: X, j: Y });
+    CheckedCells.push({ i: X, j: Y });
 
-    if (gBoard[cell.i][cell.j].minesAroundCell === 0) {
+    if (gBoard[ModelCell.i][ModelCell.j].minesAroundCell === 0) {
         for (let i = (X - 1); i <= (X + 1); i++) {
             if (i >= 0 && i < gBoard.length) {
                 for (let j = Y - 1; j <= Y + 1; j++) {
                     if (j >= 0 && j < gBoard[i].length) {
                         if (!gBoard[i][j].isMine) {
 
-                            var curCellDOM = document.querySelector(`td[data-i="${i}"][data-j="${j}"]`)
+                            var curDOMCell = document.querySelector(`td[data-i="${i}"][data-j="${j}"]`)
                             gBoard[i][j].isShown = true
-                            curCellDOM.classList.add('shown')
+                            curDOMCell.classList.add('shown')
 
                             showCells({ i, j });
 
-                            curCellDOM.innerHTML = gBoard[i][j].minesAroundCell
-                            colorCells(curCellDOM)
+                            curDOMCell.innerHTML = gBoard[i][j].minesAroundCell
+                            colorCells(curDOMCell)
                         }
                     }
                 }
@@ -240,38 +146,11 @@ function showCells(cell) {
 }
 
 
-function colorCells(elCell) {
-    if (elCell.innerHTML === '0') elCell.style.color = '#c0c0c0'
-    if (elCell.innerHTML === '1') elCell.style.color = 'blue'
-    if (elCell.innerHTML === '2') elCell.style.color = 'green'
-    if (elCell.innerHTML === '3') elCell.style.color = 'red'
-}
-
-
-function changeSmiley() {
-
-    if (isDead) {
-        gSmileyDOM.innerHTML = '<img src="img/dead.png"></img>'
-        return
-    }
-    else if (youWin()) {
-        gSmileyDOM.innerHTML = '<img src="img/cool.png"></img>'
-        return
-    } else if ((gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>')) {
-        gSmileyDOM.innerHTML = '<img src="img/excited.png"></img>'
-        setTimeout(() => {
-            gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>'
-        }, 300);
-    } else {
-        gSmileyDOM.innerHTML = '<img src="img/happy.png"></img>'
-    }
-}
-
-
 function youWin() {
     var flaggedMines = 0
     var shownCells = 0
     var youWin = false
+    var livesUsed = (3 - livesLeft)
 
     for (let i = 0; i < gBoard.length; i++) {
         for (let j = 0; j < gBoard[i].length; j++) {
@@ -279,28 +158,16 @@ function youWin() {
             if (gBoard[i][j].isShown) shownCells++
         }
     }
-    if (flaggedMines === amountOfMines &&
-        shownCells === ((boardRows * boardCols) - amountOfMines)) youWin = true
+    if (flaggedMines === (amountOfMines - livesUsed) &&
+        shownCells === ((setBoardSize.rows * setBoardSize.cols) - (amountOfMines - livesUsed))) youWin = true
 
     return youWin
 }
 
 
-// function gameOver(cell) {
-
-//     var gameIsOver = false
-
-//     if (gBoard[cell.i][cell.j].isMine &&
-//         !gBoard[cell.i][cell.j].isFlagged &&
-//         livesLeft === 0) gameIsOver = true
-
-//     return gameIsOver
-// }
-
-
 var cellsWithMinesModel = []
 
-function revealMines(cell) {
+function revealMines(ModelCell) {
 
     cellsWithMinesModel.length = 0
 
@@ -311,11 +178,50 @@ function revealMines(cell) {
     }
 
     for (let i = 0; i < cellsWithMinesModel.length; i++) {
-        var cellsWithMinesDOM = document.querySelector(`td[data-i="${cellsWithMinesModel[i].i}"][data-j="${cellsWithMinesModel[i].j}"]`)
+        let curModelCell = cellsWithMinesModel[i]
+        let cellsWithMinesDOM = document.querySelector(`td[data-i="${curModelCell.i}"][data-j="${curModelCell.j}"]`)
         cellsWithMinesDOM.innerHTML = MINE
     }
 
-    document.querySelector(`td[data-i="${cell.i}"][data-j="${cell.j}"]`).classList.add('explode')
-
-
+    document.querySelector(`td[data-i="${ModelCell.i}"][data-j="${ModelCell.j}"]`).classList.add('explode')
 }
+
+function hintIsOn() {
+    if (haveMinesBeenPlaced && hintsLeft > 0) isHintOn = true
+}
+
+function setCounter(type) {
+
+    var strHTML = ''
+    var counterBox
+    var amountLeft
+    var on
+    var off
+
+    if (type === 'life') {
+        counterBox = document.querySelector('.life-counter-box')
+        amountLeft = livesLeft
+        on = '<img src="img/grin.png" onclick="clickSmileys(this)"></img>'
+        off = '<img src="img/frown.png"></img>'
+    }
+    if (type === 'hint') {
+        if (type === 'hint') counterBox = document.querySelector('.hint-box')
+        amountLeft = hintsLeft
+        on = '<img src="img/bulbOn.png" onclick="hintIsOn(); clickBulb(this);"></img>'
+        off = '<img src="img/bulbOff.png"></img>'
+    }
+
+    for (let i = 0; i < 3; i++) {
+        if (i < amountLeft) {
+            strHTML += ' '
+            strHTML += on
+        } else {
+            strHTML += ' '
+            strHTML += off
+        }
+    }
+
+    counterBox.innerHTML = strHTML
+}
+
+

@@ -5,7 +5,7 @@
 body {
     text-align: center;
     font-family: 'minesweeper', Arial, sans-serif;
-    background-color: rgb(118, 121, 139);
+    background-color: rgb(86, 99, 129);
 }
 
 
@@ -34,8 +34,147 @@ h1 {
     border-style: solid;
     align-items: center;
     box-shadow: white 3px 3px;
-    width: 330px
+    width: 370px
 }
+
+.explanation {
+    width: 650px;
+    margin: auto;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    text-align: center;
+    overflow: hidden;
+    padding-bottom: 0px;
+}
+
+.lives {
+    color: rgb(0, 0, 0);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 20px;
+    border: 3px solid rgb(0, 0, 0);
+    background-color: white;
+    text-align: center;
+    border-radius: 5px;
+    width: 60px;
+    vertical-align: top;
+    margin-right: 115px;
+}
+
+.board-size {
+    color: rgb(0, 0, 0);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 20px;
+    border: 3px solid rgb(0, 0, 0);
+    background-color: white;
+    text-align: center;
+    border-radius: 5px;
+    width: 125px;
+    justify-content: flex-start;
+    margin-right: 70px;
+
+}
+
+.hints {
+    color: rgb(0, 0, 0);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 20px;
+    border: 3px solid rgb(0, 0, 0);
+    background-color: white;
+    text-align: center;
+    border-radius: 5px;
+    width: 65px;
+    justify-content: flex-end;
+    right: 60px;
+    margin-right: 0px;
+}
+
+
+.settings {
+    width: 650px; /* Fixed width for the container */
+    display: block;
+    margin: auto; /* Center the container horizontally */
+    text-align: center; /* Center the inline-block elements */
+    padding-bottom: 0px;
+    overflow: hidden; /* Prevents overflow issues */
+}
+
+.life-counter-box {
+    display: inline-block; /* Display as inline-block */
+    vertical-align: top; /* Aligns the top of the elements */
+    justify-content: flex-start;
+    white-space: nowrap;
+    margin-top: 1%;
+    width: 135px;
+    height: 47px;
+}
+
+.life-counter-box img {
+    width: 30%;
+    height: 100%;
+    object-fit:scale-down;
+    cursor: pointer;
+
+}
+
+.input-wrapper {
+    width: 230px; /* Fixed width for child */
+    display: inline-block; /* Display as inline-block */
+    margin: 5px 0; /* Vertical margin, no horizontal */
+    margin-left: 30px;
+    vertical-align: top; /* Aligns the top of the elements */
+}
+
+.number-box {
+    font-family: 'minesweeper', Arial, sans-serif;
+    text-align: center;
+    color: black;
+    background-color: #c0c0c0;
+    border: 3px solid black;
+    margin-right: 5px;
+    width: 60px;
+    height: 45px;
+}
+
+.hint-box {
+    display: inline-block; /* Display as inline-block */
+    vertical-align: top; /* Aligns the top of the elements */
+    /* justify-content: flex-start; */
+    white-space: nowrap;
+    margin-left: 2%;
+    /* margin-top: 1%; */
+    width: 135px;
+    height: 47px;
+}
+
+.hint-box img {
+    width: 29%;
+    height: 100%;
+    object-fit:scale-down;
+    cursor: pointer;
+}
+
+.number-box::-webkit-inner-spin-button,
+.number-box::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.number-box::placeholder {
+    color: rgb(78, 78, 78); /* Set your desired placeholder text color here */
+}
+
+/* .image-container {
+    position: relative;
+    width: 131px;
+    height: auto;
+} */
+
 
 .dashboard {
     width: 340px;
@@ -43,7 +182,7 @@ h1 {
     display: flex;
     justify-content: space-around;
     padding: 5px;
-    margin-top: 40px;
+    margin-top: 10px;
     border-collapse: separate;
     background-color: #c0c0c0;
     border-top: 10px solid #ffffff;
@@ -64,6 +203,7 @@ h1 {
     display: flex; /* Added to align the span in the center */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    cursor: pointer;
 }
 
 span {
@@ -94,75 +234,18 @@ span {
     border-bottom: 5px solid #7b7b7b;
     border-right: 5px solid #7b7b7b;
     position: relative;
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
-
 }
 
-.dashboard2 {
-    width: 340px;
-    margin: auto;
-    display: flex;
-    justify-content: flex-start;
-    padding: 5px;
-    border-collapse: separate;
-    background-color: #c0c0c0;
-    text-align: justify;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.input-wrapper {
-    margin-left: 5%;
-    margin-right: 5%;
-    display: flex;
-    justify-content: flex-start; /* Align children to the left */
+.smiley img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: 1s;
 
 }
-
-.number-box {
-    font-family: 'minesweeper', Arial, sans-serif;
-    text-align: center;
-    color: black;
-    background-color: #c0c0c0;
-    margin-right: 10px;
-    width: 60px;
-    height: 45px;
-    border-top: 5px solid #ffffff;
-    border-left: 5px solid #ffffff;
-    border-bottom: 5px solid #7b7b7b;
-    border-right: 5px solid #7b7b7b;
-}
-
-.number-box::-webkit-inner-spin-button,
-.number-box::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.number-box::placeholder {
-    color: rgb(78, 78, 78); /* Set your desired placeholder text color here */
-}
-
-.image-container {
-    position: relative; /* Establishes a positioning context */
-    width: 131px; /* Set to required width, or match to image width */
-    height: auto; /* Adjust height based on content */
-}
-
-.life-counter-box {
-    justify-content: flex-start;
-    margin-left: 5%;
-    width: 131px;
-    height: 47px;
-    border-top: 5px solid #ffffff;
-    border-left: 5px solid #ffffff;
-    border-bottom: 5px solid #7b7b7b;
-    border-right: 5px solid #7b7b7b;
-}
-
-
 
 .board-border {
     width: 340px;
@@ -200,8 +283,8 @@ span {
 
 }
 
-.cell {
-    display: table-cell;
+.ModelCell {
+    display: table-ModelCell;
     font-size: 25px;
     border-style: ridge;
     background-color: rgb(192, 192, 192);
@@ -216,7 +299,7 @@ span {
     white-space: nowrap
 }
 
-.cell img {
+.ModelCell img {
     margin-top: 3.5px;
 
 }
@@ -229,3 +312,5 @@ span {
 .explode {
     background-color: red;
 }
+
+

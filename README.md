@@ -23,4 +23,11 @@ Version 0.3
 Bonus tasks completed:
 + Added a hint system
 
+Version 0.4
+
+Bonus tasks completed:
++ Added a Safe Click system
++ Added an Undo button
++ Added a Manual Mine mode
+
   

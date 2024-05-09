@@ -14,14 +14,14 @@ function rightMouseClick(DOMCell) {
             DOMCell.innerHTML = ModelCellContent
 
             if (amountOfFlags >= 0) amountOfFlags++
-            resetFlagsAndSmiley()
+            resetFlags()
 
         } else if (amountOfFlags > 0) {
             gBoard[ModelCell.i][ModelCell.j].isFlagged = true
             DOMCell.innerHTML = FLAG
 
             if (amountOfFlags > 0) amountOfFlags--
-            resetFlagsAndSmiley()
+            resetFlags()
         }
     }
 }
@@ -37,21 +37,24 @@ function leftMouseClick(DOMCell) {
     if (isHintOn) {
         useHint(DOMCell)
 
-    } else if (!gBoard[ModelCell.i][ModelCell.j].isMine) {
+    } else if (manualMode) {
+        manualMines(ModelCell)
 
+    } else if (!gBoard[ModelCell.i][ModelCell.j].isMine) {
         DOMCell.classList.add('shown')
         gBoard[ModelCell.i][ModelCell.j].isShown = true
 
         if (!haveMinesBeenPlaced) placeMines(DOMCell)
+        if (haveMinesBeenPlaced) findMinesOnMap(ModelCell)
 
         showCells(ModelCell)
 
-        DOMCell.innerHTML = gBoard[ModelCell.i][ModelCell.j].minesAroundCell
+        DOMCell.innerText = gBoard[ModelCell.i][ModelCell.j].minesAroundCell
         colorCells(DOMCell)
 
     } else if (gBoard[ModelCell.i][ModelCell.j].isMine && livesLeft > 0 && !gBoard[ModelCell.i][ModelCell.j].isShown) {
         amountOfFlags--
-        resetFlagsAndSmiley()
+        resetFlags()
 
         livesLeft--
         setCounter('life')
@@ -80,6 +83,7 @@ function useHint(DOMCell) {
 
     findNearbyCellsOrMines(ModelCell)
     nearbyCells.push(ModelCell)
+
     for (let i = 0; i < nearbyCells.length; i++) {
         if (!gBoard[nearbyCells[i].i][nearbyCells[i].j].isShown) {
             let curDOMCell = document.querySelector(`td[data-i="${nearbyCells[i].i}"][data-j="${nearbyCells[i].j}"]`)

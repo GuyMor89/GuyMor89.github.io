@@ -52,8 +52,11 @@ function clickFlagBox(elBox) {
 
 }
 
-function resetFlagsAndSmiley() {
-    document.querySelector('.mine-counter span').innerText = amountOfFlags.toString().padStart(3, '0')
+function resetFlags() {
+    document.querySelector('.mine-counter span').innerText = '000'
+}
+
+function resetSmiley() {
     document.querySelector('.smiley').innerHTML = '<img src="img/happy.png"></img>'
 }
 
@@ -84,6 +87,47 @@ function changeSmiley(ModelCell) {
         smileyDom.innerHTML = '<img src="img/happy.png"></img>'
     }
 }
+
+function setCounter(type) {
+
+    var strHTML = ''
+    var counterBox
+    var amountLeft
+    var on
+    var off
+
+    if (type === 'safeClick'){
+        counterBox = document.querySelector('.safe-click')
+        counterBox.innerText = 3
+        return
+    }
+
+    if (type === 'life') {
+        counterBox = document.querySelector('.life-counter-box')
+        amountLeft = livesLeft
+        on = '<img src="img/grin.png" onclick="clickSmileys(this)"></img>'
+        off = '<img src="img/frown.png"></img>'
+    }
+    if (type === 'hint') {
+        counterBox = document.querySelector('.hint-box')
+        amountLeft = hintsLeft
+        on = '<img src="img/bulbOn.png" onclick="hintIsOn(); clickBulb(this);"></img>'
+        off = '<img src="img/bulbOff.png"></img>'
+    }
+
+    for (let i = 0; i < 3; i++) {
+        if (i < amountLeft) {
+            strHTML += ' '
+            strHTML += on
+        } else {
+            strHTML += ' '
+            strHTML += off
+        }
+    }
+
+    counterBox.innerHTML = strHTML
+}
+
 
 function colorCells(DOMCell) {
     if (DOMCell.innerHTML === '0') DOMCell.style.color = '#c0c0c0'

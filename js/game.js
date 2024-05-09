@@ -11,8 +11,10 @@ var isGameOn = true
 var haveMinesBeenPlaced = false
 var hasTimerBeenStarted = false
 var isHintOn = false
+var manualMode = false
 var hintsLeft = 3
 var livesLeft = 3
+var safeClicks = 3
 
 const MINE = '<img src="img/mine.png"></img>'
 const FLAG = '<img src="img/flag.png"></img>'
@@ -23,7 +25,6 @@ const setBoardSize = {
 
 
 function onInit() {
-    amountOfFlags = amountOfMines = Math.round((setBoardSize.rows * setBoardSize.cols) * 0.15)
 
     gBoard = createBoard()
     renderBoard(gBoard)
@@ -31,16 +32,17 @@ function onInit() {
 
     isGameOn = true
     haveMinesBeenPlaced = false
-    hasTimerBeenStarted = false
     CheckedCells.length = 0
 
-    livesLeft = 3
+    livesLeft = hintsLeft = safeClicks = 3
     setCounter('life')
-
-    hintsLeft = 3
     setCounter('hint')
+    setCounter('safeClick')
 
-    resetFlagsAndSmiley()
+    resetSmiley()
+    resetFlags()
+
+    hasTimerBeenStarted = false
     stopTimer()
 }
 
@@ -93,18 +95,33 @@ function cellClicked(DOMCell, event) {
     } else leftMouseClick(DOMCell)
 
     changeSmiley(ModelCell)
-
+    saveState()
 }
 
 function placeMines(DOMCell) {
 
+    amountOfFlags = amountOfMines = Math.round((setBoardSize.rows * setBoardSize.cols) * 0.15)
+    document.querySelector('.mine-counter span').innerText = amountOfFlags.toString().padStart(3, '0')
+
     var ModelCell = shiftCellType(DOMCell)
 
+    findEmptyCells(ModelCell)
     findCellsToPlaceMines(DOMCell)
     findMinesOnMap(ModelCell)
 
     haveMinesBeenPlaced = true
 
+}
+
+function setManualMode() {
+    if (!haveMinesBeenPlaced) { manualMode = true}
+    else manualMode = false
+}
+
+function manualMines(ModelCell) {
+    gBoard[ModelCell.i][ModelCell.j].isMine = true
+    amountOfMines++
+    haveMinesBeenPlaced = true
 }
 
 
@@ -134,7 +151,7 @@ function showCells(ModelCell) {
 
                             showCells({ i, j });
 
-                            curDOMCell.innerHTML = gBoard[i][j].minesAroundCell
+                            curDOMCell.innerText = gBoard[i][j].minesAroundCell
                             colorCells(curDOMCell)
                         }
                     }
@@ -186,42 +203,50 @@ function revealMines(ModelCell) {
     document.querySelector(`td[data-i="${ModelCell.i}"][data-j="${ModelCell.j}"]`).classList.add('explode')
 }
 
+
 function hintIsOn() {
     if (haveMinesBeenPlaced && hintsLeft > 0) isHintOn = true
 }
 
-function setCounter(type) {
 
-    var strHTML = ''
-    var counterBox
-    var amountLeft
-    var on
-    var off
+function safeClick(DOMBtn) {
 
-    if (type === 'life') {
-        counterBox = document.querySelector('.life-counter-box')
-        amountLeft = livesLeft
-        on = '<img src="img/grin.png" onclick="clickSmileys(this)"></img>'
-        off = '<img src="img/frown.png"></img>'
-    }
-    if (type === 'hint') {
-        if (type === 'hint') counterBox = document.querySelector('.hint-box')
-        amountLeft = hintsLeft
-        on = '<img src="img/bulbOn.png" onclick="hintIsOn(); clickBulb(this);"></img>'
-        off = '<img src="img/bulbOff.png"></img>'
-    }
+    if (safeClicks < 1 || !haveMinesBeenPlaced) return
 
-    for (let i = 0; i < 3; i++) {
-        if (i < amountLeft) {
-            strHTML += ' '
-            strHTML += on
-        } else {
-            strHTML += ' '
-            strHTML += off
+    let minesLeft = findEmptyCells({ i: 0, j: 7 }, 'safeClick')
+
+    var livesUsed = (3 - livesLeft)
+
+    if ((shownCells.length + minesLeft - livesUsed !== (setBoardSize.rows * setBoardSize.cols))) {
+
+        for (let k = 0; k < 1; k++) {
+
+            var randomCellModel = emptyCells[getRandomIntInclusive(0, emptyCells.length - 1)]
+
+            if (gBoard[randomCellModel.i][randomCellModel.j].isShown ||
+                gBoard[randomCellModel.i][randomCellModel.j].isMine ||
+                gBoard[randomCellModel.i][randomCellModel.j].isFlagged) {
+                k--
+                continue
+            }
+
+            gBoard[randomCellModel.i][randomCellModel.j].isShown = true
+
+            var randomCellDOM = document.querySelector(`td[data-i="${randomCellModel.i}"][data-j="${randomCellModel.j}"]`)
+            randomCellDOM.classList.add('shown')
+            randomCellDOM.innerHTML = gBoard[randomCellModel.i][randomCellModel.j].minesAroundCell
+            colorCells(randomCellDOM)
+
+            setTimeout(() => {
+                gBoard[randomCellModel.i][randomCellModel.j].isShown = false
+                randomCellDOM.classList.remove('shown')
+                randomCellDOM.innerHTML = ''
+            }, 3000);
         }
     }
 
-    counterBox.innerHTML = strHTML
-}
+    safeClicks--
+    DOMBtn.innerText = safeClicks
 
+}
 

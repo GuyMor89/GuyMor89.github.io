@@ -10,7 +10,6 @@ function shiftCellType(DOMcell) {
     return ModelCell
 }
 
-
 var nearbyCells = []
 
 function findNearbyCellsOrMines(ModelCell) {
@@ -29,13 +28,11 @@ function findNearbyCellsOrMines(ModelCell) {
                     nearbyCells.push({ i, j })
                     if (gBoard[i][j] === gBoard[X][Y]) continue
                     if (gBoard[i][j].isMine) count++
-                    
 
                 }
             }
         }
-    } 
-    return count
+    } return count
 }
 
 
@@ -48,32 +45,49 @@ function findMinesOnMap() {
     }
 }
 
-var randomCells = []
+
+var emptyCells = []
+var shownCells = []
+
+function findEmptyCells(ModelCell, type) {
+
+    emptyCells.length = 0
+    shownCells.length = 0
+
+    var minesLeft = 0
+
+    for (let i = 0; i < gBoard.length; i++) {
+        for (let j = 0; j < gBoard[i].length; j++) {
+            if (gBoard[i][j].isShown) shownCells.push({ i, j })
+            if (!gBoard[i][j].isMine) {
+                if (type !== 'safeClick') {
+                    if (gBoard[i][j] !== gBoard[ModelCell.i][ModelCell.j]) {
+                        emptyCells.push({ i, j })
+                    }
+                } else emptyCells.push({ i, j })
+            } else minesLeft++
+        }
+    } return minesLeft
+}
+
 
 function findCellsToPlaceMines(DOMCell) {
-
-    randomCells.length = 0
 
     var ModelCell = shiftCellType(DOMCell)
 
     findNearbyCellsOrMines(ModelCell)
 
     for (let k = 0; k < amountOfMines; k++) {
+        var randomCellModel = emptyCells[getRandomIntInclusive(0, emptyCells.length - 1)]
 
-        var randomCellModel = {
-            i: getRandomIntInclusive(0, setBoardSize.rows - 1),
-            j: getRandomIntInclusive(0, setBoardSize.cols - 1)
-        }
         if (nearbyCells.some(ModelCell => ModelCell.i === randomCellModel.i && ModelCell.j === randomCellModel.j)) {
             k--
             continue
         }
-        if (randomCells.some(randomCell => randomCell.i === randomCellModel.i && randomCell.j === randomCellModel.j)) {
+        if (gBoard[randomCellModel.i][randomCellModel.j].isMine) {
             k--
             continue
         }
-        randomCells.push(randomCellModel)
-
         gBoard[randomCellModel.i][randomCellModel.j].isMine = true
 
         var randomCellDOM = document.querySelector(`td[data-i="${randomCellModel.i}"][data-j="${randomCellModel.j}"]`)
@@ -81,6 +95,48 @@ function findCellsToPlaceMines(DOMCell) {
     }
 }
 
+var cloneArray = []
+var gBoardClone = []
 
+function saveState() {
 
+    gBoardClone = structuredClone(gBoard)
 
+    cloneArray.push(gBoardClone)
+}
+
+function restoreState() {
+
+    CheckedCells.length = 0
+
+    for (let i = 0; i < gBoard.length; i++) {
+        for (let j = 0; j < gBoard[i].length; j++) {
+
+            if (cloneArray[cloneArray.length - 2]) {
+                if (cloneArray[cloneArray.length - 1][i][j].isShown &&
+                    !cloneArray[cloneArray.length - 2][i][j].isShown) {
+                    gBoard[i][j].isShown = false
+                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('shown')
+                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).innerText = ''
+
+                    if (cloneArray[cloneArray.length - 1][i][j].isMine &&
+                        !cloneArray[cloneArray.length - 2][i][j].isShown) {
+                        document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('explode')
+                        livesLeft++
+                        setCounter('life')
+                    }
+                }
+                if (cloneArray[cloneArray.length - 1]) {
+                } else if (cloneArray[cloneArray.length - 1][i][j].isShown) {
+                    gBoard[i][j].isShown = false
+                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('shown')
+                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).innerText = ''
+                } else if (cloneArray[cloneArray.length - 1][i][j].isMine) {
+                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('explode')
+                    livesLeft++
+                    setCounter('life')
+                }
+            }
+        }
+    } cloneArray.pop()
+}

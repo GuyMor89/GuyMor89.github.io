@@ -16,7 +16,9 @@
     <div class="explanation">
         <div class="lives">Lives</div>
         <div class="board-size">Custom Size</div>
-        <div class="hints">Hints</div>
+        <div class="board-size">Manual Mine</div>
+        <div class="lives">Hints</div>
+        <div class="board-size">Safe Click</div>
     </div>
 
     <div class="settings">
@@ -26,7 +28,10 @@
             <input type="number" class="number-box col" placeholder="Col">
             <button class="number-box OK" onclick="changeBoardSize()">OK</button>
         </div>
+        <div class="manual-mines" onclick="setManualMode()">Manual</div>
         <div class="hint-box"></div>
+        <div class="safe-click" onclick="safeClick(this)">3</div>
+        <div class="undo" onclick="restoreState()">Undo</div>
     </div>
 
     <div class="dashboard">

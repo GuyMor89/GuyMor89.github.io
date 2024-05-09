@@ -38,11 +38,11 @@ h1 {
 }
 
 .explanation {
-    width: 650px;
+    width: 750px;
     margin: auto;
     margin-top: 40px;
     margin-bottom: 5px;
-    text-align: center;
+    text-align: start;
     overflow: hidden;
     padding-bottom: 0px;
 }
@@ -59,7 +59,7 @@ h1 {
     border-radius: 5px;
     width: 60px;
     vertical-align: top;
-    margin-right: 115px;
+    margin-left: 50px;
 }
 
 .board-size {
@@ -74,7 +74,7 @@ h1 {
     border-radius: 5px;
     width: 125px;
     justify-content: flex-start;
-    margin-right: 70px;
+    margin-left: 40px;
 
 }
 
@@ -96,17 +96,19 @@ h1 {
 
 
 .settings {
-    width: 650px; /* Fixed width for the container */
+    width: 750px;
     display: block;
-    margin: auto; /* Center the container horizontally */
-    text-align: center; /* Center the inline-block elements */
-    padding-bottom: 0px;
-    overflow: hidden; /* Prevents overflow issues */
+    margin: auto;
+    text-align: start;
+    overflow: hidden;
+    /* border-collapse: separate; */
+    border: 1px solid transparent;
+    /* padding: 20px */
 }
 
 .life-counter-box {
-    display: inline-block; /* Display as inline-block */
-    vertical-align: top; /* Aligns the top of the elements */
+    display: inline-block;
+    vertical-align: top;
     justify-content: flex-start;
     white-space: nowrap;
     margin-top: 1%;
@@ -117,17 +119,17 @@ h1 {
 .life-counter-box img {
     width: 30%;
     height: 100%;
-    object-fit:scale-down;
+    object-fit: scale-down;
     cursor: pointer;
 
 }
 
 .input-wrapper {
-    width: 230px; /* Fixed width for child */
-    display: inline-block; /* Display as inline-block */
-    margin: 5px 0; /* Vertical margin, no horizontal */
-    margin-left: 30px;
-    vertical-align: top; /* Aligns the top of the elements */
+    width: 200px;
+    display: inline-block;
+    margin: 5px 0;
+    margin-left: 10px;
+    vertical-align: top;
 }
 
 .number-box {
@@ -136,18 +138,15 @@ h1 {
     color: black;
     background-color: #c0c0c0;
     border: 3px solid black;
-    margin-right: 5px;
     width: 60px;
     height: 45px;
 }
 
 .hint-box {
-    display: inline-block; /* Display as inline-block */
-    vertical-align: top; /* Aligns the top of the elements */
-    /* justify-content: flex-start; */
+    display: inline-block;
+    vertical-align: top;
     white-space: nowrap;
-    margin-left: 2%;
-    /* margin-top: 1%; */
+    /* margin-left: 1%; */
     width: 135px;
     height: 47px;
 }
@@ -155,7 +154,7 @@ h1 {
 .hint-box img {
     width: 29%;
     height: 100%;
-    object-fit:scale-down;
+    object-fit: scale-down;
     cursor: pointer;
 }
 
@@ -166,15 +165,68 @@ h1 {
 }
 
 .number-box::placeholder {
-    color: rgb(78, 78, 78); /* Set your desired placeholder text color here */
+    color: rgb(78, 78, 78);
+    /* Set your desired placeholder text color here */
 }
 
-/* .image-container {
-    position: relative;
-    width: 131px;
-    height: auto;
-} */
+.manual-mines {
+    font-family: 'minesweeper', Arial, sans-serif;
+    display: inline-block;
+    text-align: center;
+    border-collapse: separate;
+    vertical-align: top;
+    color: black;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    background-color: #fc6b6b;
+    border: 3px solid black;
+    padding-top: 10px;
+    margin-top: 7px;
+    width: 84px;
+    height: 42px;
+    -webkit-text-stroke: 0.2px #fff;
+    cursor: pointer;
 
+}
+
+.safe-click {
+    font-family: 'minesweeper', Arial, sans-serif;
+    display: inline-block;
+    border-collapse: separate;
+    text-align: center;
+    color: black;
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    background-color: #8abcd8;
+    border: 3px solid black;
+    margin-top: 8px;
+    padding-top: 4px;
+    width: 70px;
+    height: 42px;
+    -webkit-text-stroke: 0.5px #fff;
+    cursor: pointer;
+
+}
+
+.undo {
+    font-family: 'minesweeper', Arial, sans-serif;
+    display: inline-block;
+    text-align: center;
+    border-collapse: separate;
+    vertical-align: top;
+    color: black;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    background-color: #d4b45b;
+    border: 3px solid black;
+    padding-top: 10px;
+    margin-top: 7px;
+    width: 70px;
+    height: 42px;
+    -webkit-text-stroke: 0.2px #fff;
+    cursor: pointer;
+
+}
 
 .dashboard {
     width: 340px;
@@ -182,7 +234,7 @@ h1 {
     display: flex;
     justify-content: space-around;
     padding: 5px;
-    margin-top: 10px;
+    margin-top: 5px;
     border-collapse: separate;
     background-color: #c0c0c0;
     border-top: 10px solid #ffffff;
@@ -200,16 +252,16 @@ h1 {
     background-color: rgb(0, 0, 0);
     width: 75px;
     height: 45px;
-    display: flex; /* Added to align the span in the center */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
 }
 
 span {
-    color: rgb(215, 55, 55); /* Specific text color for the span */
-    -webkit-transform: scale(1, 1.35); /* Scale for WebKit browsers */
-    transform: scale(1, 1.35); /* Scale normally */
+    color: rgb(215, 55, 55);
+    -webkit-transform: scale(1, 1.35);
+    transform: scale(1, 1.35);
 }
 
 
@@ -218,7 +270,7 @@ span {
     font-size: 30px;
     display: flex;
     justify-content: center;
-    align-items: center; /* border: 3px solid white; */
+    align-items: center;
     color: rgb(228, 60, 60);
     background-color: rgb(0, 0, 0);
     position: relative;
@@ -228,7 +280,7 @@ span {
 
 .smiley {
     font-family: 'timer';
-    font-size: 30px; /* border: 3px solid white; */
+    font-size: 30px;
     border-top: 5px solid #ffffff;
     border-left: 5px solid #ffffff;
     border-bottom: 5px solid #7b7b7b;
@@ -250,9 +302,12 @@ span {
 .board-border {
     width: 340px;
     margin: 0 auto;
-    display: flex; /* Using Flexbox to shrink-wrap the div to its contents */
-    justify-content: center; /* Center the child horizontally */
-    align-items: center; /* Center the child vertically */
+    display: flex;
+    /* Using Flexbox to shrink-wrap the div to its contents */
+    justify-content: center;
+    /* Center the child horizontally */
+    align-items: center;
+    /* Center the child vertically */
     padding: 2px;
     background-color: #c0c0c0;
     border-top: 10px solid #ffffff;
@@ -264,9 +319,9 @@ span {
 .board-container {
     display: table;
     max-width: 947px;
-    width: 100%; /* Make the board-container take full width of its parent by default */
-    table-layout: fixed; /* Enforces fixed column widths */
-    margin: auto; /* Centering if needed */
+    width: 100%;
+    table-layout: fixed;
+    margin: auto;
     padding: 2px;
     background-color: rgb(192, 192, 192);
     border: 5px solid rgb(192, 192, 192);
@@ -312,5 +367,3 @@ span {
 .explode {
     background-color: red;
 }
-
-

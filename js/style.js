@@ -53,7 +53,11 @@ function clickFlagBox(elBox) {
 }
 
 function resetFlags() {
-    document.querySelector('.mine-counter span').innerText = '000'
+    if (!haveMinesBeenPlaced) {
+        document.querySelector('.mine-counter span').innerText = '000'
+    } else {
+        document.querySelector('.mine-counter span').innerText = amountOfFlags.toString().padStart(3, '0')
+    }
 }
 
 function resetSmiley() {
@@ -71,13 +75,15 @@ function changeSmiley(ModelCell) {
     } else if (!isGameOn) {
         smileyDom.innerHTML = '<img src="img/dead.png"></img>'
         return
-    } else if (gBoard[ModelCell.i][ModelCell.j].isMine &&
-        livesLeft > 0 &&
-        gBoard[ModelCell.i][ModelCell.j].isShown) {
-        smileyDom.innerHTML = '<img src="img/dead.png"></img>'
-        setTimeout(() => {
-            smileyDom.innerHTML = '<img src="img/happy.png"></img>'
-        }, 300);
+    } else if (ModelCell) {
+        if (gBoard[ModelCell.i][ModelCell.j].isMine &&
+            livesLeft > 0 &&
+            gBoard[ModelCell.i][ModelCell.j].isShown) {
+            smileyDom.innerHTML = '<img src="img/dead.png"></img>'
+            setTimeout(() => {
+                smileyDom.innerHTML = '<img src="img/happy.png"></img>'
+            }, 300);
+        }
     } else if ((smileyDom.innerHTML = '<img src="img/happy.png"></img>')) {
         smileyDom.innerHTML = '<img src="img/excited.png"></img>'
         setTimeout(() => {
@@ -96,9 +102,9 @@ function setCounter(type) {
     var on
     var off
 
-    if (type === 'safeClick'){
+    if (type === 'safeClick') {
         counterBox = document.querySelector('.safe-click')
-        counterBox.innerText = 3
+        counterBox.innerHTML = `<img src="img/safe3.png">`
         return
     }
 
@@ -139,4 +145,58 @@ function colorCells(DOMCell) {
     if (DOMCell.innerHTML === '6') DOMCell.style.color = 'cyan'
     if (DOMCell.innerHTML === '7') DOMCell.style.color = 'black'
     if (DOMCell.innerHTML === '8') DOMCell.style.color = 'grey'
+}
+
+
+function countScore() {
+    var time = document.querySelector('.timer span').innerText
+    var score = (clickCounter * 10) - time
+
+    return score
+}
+
+function showScore() {
+    var scoreBoard = document.querySelector('.score-board')
+    scoreBoard.classList.toggle('show-board')
+
+    var firstScoreStorage = localStorage.getItem('firstScore')
+    var firstScoreDOM = document.querySelector('.first-score')
+    firstScoreDOM.innerText = `(#1): ${firstScoreStorage}`
+
+    var secondScoreStorage = localStorage.getItem('secondScore')
+    var secondScoreDOM = document.querySelector('.second-score')
+    secondScoreDOM.innerText = `(#2): ${secondScoreStorage}`
+
+    var thirdScoreStorage = localStorage.getItem('thirdScore')
+    var thirdScoreDOM = document.querySelector('.third-score')
+    thirdScoreDOM.innerText = `(#3): ${thirdScoreStorage}`
+
+}
+
+function setMode(DOMBtn) {
+
+    var body = document.querySelector('body')
+
+    if (!darkMode) {
+        darkMode = true
+        DOMBtn.innerHTML = `<img src="img/dark.png">`
+        body.classList.add('dark-mode')
+    }
+    else if (darkMode) {
+        darkMode = false
+        DOMBtn.innerHTML = `<img src="img/light.png">`
+        body.classList.remove('dark-mode')
+    }
+}
+
+function scoreIcon(DOMBtn) {
+
+    if (!scoreIconOn) {
+        scoreIconOn = true
+        DOMBtn.innerHTML = `<img src="img/scoreClick.png">`
+    }
+    else if (scoreIconOn) {
+        scoreIconOn = false
+        DOMBtn.innerHTML = `<img src="img/score.png">`
+    }
 }

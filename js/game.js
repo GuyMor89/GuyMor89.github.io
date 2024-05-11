@@ -4,25 +4,30 @@
 var gBoard
 
 var timerInterval
-var amountOfFlags
-var amountOfMines
+var amountOfFlags = 0
+var amountOfMines = 0
 
 var isGameOn = true
 var haveMinesBeenPlaced = false
 var hasTimerBeenStarted = false
+var isExterminatorOn = false
 var isHintOn = false
-var manualMode = false
+var isMegaHintOn = false
+var manuelMode = false
+var darkMode = false
+var scoreIconOn = false
 var hintsLeft = 3
+var megaHintsLeft = 1
+var exterminationsLeft = 1
 var livesLeft = 3
 var safeClicks = 3
 
 const MINE = '<img src="img/mine.png"></img>'
 const FLAG = '<img src="img/flag.png"></img>'
 const setBoardSize = {
-    rows: 7,
-    cols: 8
+    rows: 6,
+    cols: 11
 }
-
 
 function onInit() {
 
@@ -32,9 +37,19 @@ function onInit() {
 
     isGameOn = true
     haveMinesBeenPlaced = false
+
+    manuelMode = false
+    manuelModeDOM.innerHTML = `<img src="img/manuel.png">`
+
+    isMegaHintOn = false
+    megaHintButton.innerHTML = `<img src="img/mega.png">`
+    megaStartAndEndArray.length = 0
+    megaArray.length = 0
+
     CheckedCells.length = 0
 
     livesLeft = hintsLeft = safeClicks = 3
+    megaHintsLeft = 1
     setCounter('life')
     setCounter('hint')
     setCounter('safeClick')
@@ -44,6 +59,7 @@ function onInit() {
 
     hasTimerBeenStarted = false
     stopTimer()
+    clickCounter = 0
 }
 
 function createBoard() {
@@ -73,7 +89,7 @@ function renderBoard(board) {
 
             const title = `ModelCell: ${i}, ${j}`
 
-            strHTML += `<td title="${title}" data-i="${i}" data-j="${j}" class="ModelCell" onclick="cellClicked(this, event)"></td>`
+            strHTML += `<td title="${title}" data-i="${i}" data-j="${j}" class="cell" onmousedown="cellClicked(this, event)" oncontextmenu="return false"></td>`
         }
         strHTML += `</tr>`
 
@@ -89,8 +105,11 @@ function cellClicked(DOMCell, event) {
 
     var ModelCell = shiftCellType(DOMCell)
 
-    if (event.ctrlKey) {
+    if (event.button === 2) {
         rightMouseClick(DOMCell)
+
+    } else if (event.ctrlKey) {
+
 
     } else leftMouseClick(DOMCell)
 
@@ -101,24 +120,32 @@ function cellClicked(DOMCell, event) {
 function placeMines(DOMCell) {
 
     amountOfFlags = amountOfMines = Math.round((setBoardSize.rows * setBoardSize.cols) * 0.15)
-    document.querySelector('.mine-counter span').innerText = amountOfFlags.toString().padStart(3, '0')
 
     var ModelCell = shiftCellType(DOMCell)
 
     findEmptyCells(ModelCell)
     findCellsToPlaceMines(DOMCell)
-    findMinesOnMap(ModelCell)
+    markMinesAroundAllCells(ModelCell)
 
     haveMinesBeenPlaced = true
 
+    resetFlags()
 }
 
-function setManualMode() {
-    if (!haveMinesBeenPlaced) { manualMode = true}
-    else manualMode = false
+var manuelModeDOM = document.querySelector('.manuel-mode')
+
+function setManuelMode() {
+    if (!haveMinesBeenPlaced) {
+        manuelMode = true
+        manuelModeDOM.innerHTML = `<img src="img/manuelClick.png">`
+    }
+    else {
+        manuelMode = false
+        manuelModeDOM.innerHTML = `<img src="img/manuel.png">`
+    }
 }
 
-function manualMines(ModelCell) {
+function manuelMines(ModelCell) {
     gBoard[ModelCell.i][ModelCell.j].isMine = true
     amountOfMines++
     haveMinesBeenPlaced = true
@@ -176,7 +203,9 @@ function youWin() {
         }
     }
     if (flaggedMines === (amountOfMines - livesUsed) &&
-        shownCells === ((setBoardSize.rows * setBoardSize.cols) - (amountOfMines - livesUsed))) youWin = true
+        shownCells === ((setBoardSize.rows * setBoardSize.cols) - (amountOfMines - livesUsed))) {
+        youWin = true
+    }
 
     return youWin
 }
@@ -184,7 +213,7 @@ function youWin() {
 
 var cellsWithMinesModel = []
 
-function revealMines(ModelCell) {
+function findCellsWithMines() {
 
     cellsWithMinesModel.length = 0
 
@@ -193,6 +222,11 @@ function revealMines(ModelCell) {
             if (gBoard[i][j].isMine) cellsWithMinesModel.push({ i, j })
         }
     }
+}
+
+function revealMines(ModelCell) {
+
+    findCellsWithMines()
 
     for (let i = 0; i < cellsWithMinesModel.length; i++) {
         let curModelCell = cellsWithMinesModel[i]
@@ -201,11 +235,6 @@ function revealMines(ModelCell) {
     }
 
     document.querySelector(`td[data-i="${ModelCell.i}"][data-j="${ModelCell.j}"]`).classList.add('explode')
-}
-
-
-function hintIsOn() {
-    if (haveMinesBeenPlaced && hintsLeft > 0) isHintOn = true
 }
 
 
@@ -246,7 +275,67 @@ function safeClick(DOMBtn) {
     }
 
     safeClicks--
-    DOMBtn.innerText = safeClicks
+    if (safeClicks === 2) DOMBtn.innerHTML = `<img src="img/safe2.png">`
+    if (safeClicks === 1) DOMBtn.innerHTML = `<img src="img/safe1.png">`
+    if (safeClicks === 0) DOMBtn.innerHTML = `<img src="img/safe0.png">`
 
 }
 
+var mineExterminatorDOM = document.querySelector('.mine-exterminator')
+
+
+function mineExterminatorIsOn() {
+    if (haveMinesBeenPlaced && exterminationsLeft > 0) {
+        isExterminatorOn = true
+
+        mineExterminatorDOM.innerHTML = `<img src="img/exterminatorClick.png">`
+        setTimeout(() => {
+            mineExterminatorDOM.innerHTML = `<img src="img/exterminator.png">`
+        }, 500);
+
+        exterminationsLeft--
+    }
+}
+
+
+function mineExterminator() {
+
+    if (!isExterminatorOn) return
+
+    findCellsWithMines()
+
+    for (let k = 0; k < 3; k++) {
+
+        let randomCellWithMineModel = cellsWithMinesModel[getRandomIntInclusive(0, amountOfMines - 1)]
+        let randomCellWithMineDOM = document.querySelector(`td[data-i="${randomCellWithMineModel.i}"][data-j="${randomCellWithMineModel.j}"]`)
+
+        amountOfMines--
+        amountOfFlags--
+        resetFlags()
+        gBoard[randomCellWithMineModel.i][randomCellWithMineModel.j].isMine = false
+        randomCellWithMineDOM.innerHTML = ''
+
+        markMinesAroundAllCells()
+
+        findNearbyCellsOrMines(randomCellWithMineModel)
+
+        for (let i = 0; i < nearbyCells.length; i++) {
+            if (gBoard[nearbyCells[i].i][nearbyCells[i].j].isShown) {
+                var currCell = document.querySelector(`td[data-i="${nearbyCells[i].i}"][data-j="${nearbyCells[i].j}"]`)
+                currCell.innerText = gBoard[nearbyCells[i].i][nearbyCells[i].j].minesAroundCell
+
+                if (gBoard[nearbyCells[i].i][nearbyCells[i].j].minesAroundCell === 0) {
+                    gBoard[nearbyCells[i].i][nearbyCells[i].j].isShown = false
+                    currCell.classList.remove('shown')
+
+                    CheckedCells.length = 0
+                    showCells(nearbyCells[i])
+
+                    colorCells(currCell)
+
+                }
+            }
+        }
+    } isExterminatorOn = false
+
+}

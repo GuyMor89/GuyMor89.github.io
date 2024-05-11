@@ -1,5 +1,6 @@
 'use strict'
 
+
 var ModelCellContent = ''
 
 function rightMouseClick(DOMCell) {
@@ -19,43 +20,67 @@ function rightMouseClick(DOMCell) {
         } else if (amountOfFlags > 0) {
             gBoard[ModelCell.i][ModelCell.j].isFlagged = true
             DOMCell.innerHTML = FLAG
-
-            if (amountOfFlags > 0) amountOfFlags--
+            amountOfFlags--
             resetFlags()
+
         }
+    }
+
+    if (youWin()) {
+        isGameOn = false
+        clearInterval(timerInterval)
+
+        var firstScore = localStorage.getItem('firstScore')
+        var secondScore = localStorage.getItem('secondScore')
+        var thirdScore = localStorage.getItem('thirdScore')
+
+        if (countScore() > firstScore) localStorage.setItem('firstScore', countScore())
+        if (countScore() > secondScore) localStorage.setItem('secondScore', countScore())
+        if (countScore() > thirdScore) localStorage.setItem('thirdScore', countScore())
     }
 }
 
+var clickCounter = 0
 
 function leftMouseClick(DOMCell) {
 
     var ModelCell = shiftCellType(DOMCell)
 
-    if (!hasTimerBeenStarted) startTimer()
-    hasTimerBeenStarted = true
-
     if (isHintOn) {
-        useHint(DOMCell)
+        useHint(ModelCell)
 
-    } else if (manualMode) {
-        manualMines(ModelCell)
+    } else if (manuelMode) {
+        manuelMines(ModelCell)
+
+    } else if (isMegaHintOn) {
+        console.log(isMegaHintOn);
+        useMegaHint(ModelCell)
 
     } else if (!gBoard[ModelCell.i][ModelCell.j].isMine) {
+        if (gBoard[ModelCell.i][ModelCell.j].isFlagged) {
+            amountOfFlags++
+            resetFlags()
+        }
         DOMCell.classList.add('shown')
         gBoard[ModelCell.i][ModelCell.j].isShown = true
 
         if (!haveMinesBeenPlaced) placeMines(DOMCell)
-        if (haveMinesBeenPlaced) findMinesOnMap(ModelCell)
+        if (haveMinesBeenPlaced) markMinesAroundAllCells(ModelCell)
 
         showCells(ModelCell)
 
         DOMCell.innerText = gBoard[ModelCell.i][ModelCell.j].minesAroundCell
         colorCells(DOMCell)
 
-    } else if (gBoard[ModelCell.i][ModelCell.j].isMine && livesLeft > 0 && !gBoard[ModelCell.i][ModelCell.j].isShown) {
-        amountOfFlags--
-        resetFlags()
+        clickCounter++
+        // console.log(clickCounter);
 
+    } else if (gBoard[ModelCell.i][ModelCell.j].isMine &&
+        livesLeft > 0) {
+        if (amountOfFlags > 0) {
+            amountOfFlags--
+            document.querySelector('.mine-counter span').innerText = amountOfFlags.toString().padStart(3, '0')
+        }
         livesLeft--
         setCounter('life')
 
@@ -72,14 +97,29 @@ function leftMouseClick(DOMCell) {
     if (youWin()) {
         isGameOn = false
         clearInterval(timerInterval)
+
+        var firstScore = localStorage.getItem('firstScore')
+        var secondScore = localStorage.getItem('secondScore')
+        var thirdScore = localStorage.getItem('thirdScore')
+
+        if (countScore() > firstScore) localStorage.setItem('firstScore', countScore())
+        if (countScore() > secondScore) localStorage.setItem('secondScore', countScore())
+        if (countScore() > thirdScore) localStorage.setItem('thirdScore', countScore())
+    }
+    
+    if (!hasTimerBeenStarted && haveMinesBeenPlaced) {
+        startTimer()
+        hasTimerBeenStarted = true
     }
 
 }
 
+function hintIsOn() {
+    if (haveMinesBeenPlaced && hintsLeft > 0) isHintOn = true
+}
 
-function useHint(DOMCell) {
 
-    var ModelCell = shiftCellType(DOMCell)
+function useHint(ModelCell) {
 
     findNearbyCellsOrMines(ModelCell)
     nearbyCells.push(ModelCell)
@@ -100,4 +140,52 @@ function useHint(DOMCell) {
     isHintOn = false
     hintsLeft--
     setCounter('hint')
+}
+
+
+function megaHintIsOn(DOMBtn) {
+    if (haveMinesBeenPlaced && megaHintsLeft > 0) {
+        isMegaHintOn = true
+        DOMBtn.innerHTML = `<img src="img/megaOff.png">`
+    }
+}
+
+
+var megaHintButton = document.querySelector('.mega-hint')
+var megaStartAndEndArray = []
+var megaArray = []
+
+function useMegaHint(ModelCell) {
+
+    if (!isMegaHintOn) return
+
+    if (megaStartAndEndArray.length > 2) return
+
+    megaStartAndEndArray.push(ModelCell)
+
+    if (megaStartAndEndArray.length < 2) return
+
+    if (megaStartAndEndArray.length === 2) {
+        for (let i = megaStartAndEndArray[0].i; i <= megaStartAndEndArray[1].i; i++) {
+            for (let j = megaStartAndEndArray[0].j; j <= megaStartAndEndArray[1].j; j++) {
+                megaArray.push({ i, j })
+            }
+        }
+        for (let i = 0; i < megaArray.length; i++) {
+            if (!gBoard[megaArray[i].i][megaArray[i].j].isShown) {
+                let curDOMCell = document.querySelector(`td[data-i="${megaArray[i].i}"][data-j="${megaArray[i].j}"]`)
+                curDOMCell.classList.add('shown')
+                curDOMCell.innerHTML = gBoard[megaArray[i].i][megaArray[i].j].isMine ? MINE : gBoard[megaArray[i].i][megaArray[i].j].minesAroundCell
+                colorCells(curDOMCell)
+
+                setTimeout(() => {
+                    curDOMCell.classList.remove('shown')
+                    curDOMCell.innerHTML = ''
+                }, 1000);
+            }
+        }
+    }
+
+    megaHintsLeft--
+    isMegaHintOn = false
 }

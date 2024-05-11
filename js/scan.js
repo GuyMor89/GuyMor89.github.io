@@ -1,5 +1,6 @@
 'use strict'
 
+
 function shiftCellType(DOMcell) {
 
     var i = +DOMcell.dataset.i
@@ -36,7 +37,7 @@ function findNearbyCellsOrMines(ModelCell) {
 }
 
 
-function findMinesOnMap() {
+function markMinesAroundAllCells() {
     for (let i = 0; i < gBoard.length; i++) {
         for (let j = 0; j < gBoard[i].length; j++) {
             var ModelCell = { i, j }
@@ -105,38 +106,62 @@ function saveState() {
     cloneArray.push(gBoardClone)
 }
 
-function restoreState() {
+function restoreState(DOMBtn) {
 
     CheckedCells.length = 0
+
+    const currentSave = cloneArray[cloneArray.length - 1]
+    const previousSave = cloneArray.length > 1 ? cloneArray[cloneArray.length - 2] : null;
 
     for (let i = 0; i < gBoard.length; i++) {
         for (let j = 0; j < gBoard[i].length; j++) {
 
-            if (cloneArray[cloneArray.length - 2]) {
-                if (cloneArray[cloneArray.length - 1][i][j].isShown &&
-                    !cloneArray[cloneArray.length - 2][i][j].isShown) {
-                    gBoard[i][j].isShown = false
-                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('shown')
-                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).innerText = ''
+            var DOMCell = document.querySelector(`td[data-i="${i}"][data-j="${j}"]`)
+            var mineCounterSpan = document.querySelector('.mine-counter span')
 
-                    if (cloneArray[cloneArray.length - 1][i][j].isMine &&
-                        !cloneArray[cloneArray.length - 2][i][j].isShown) {
-                        document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('explode')
-                        livesLeft++
-                        setCounter('life')
-                    }
+            if (previousSave) {
+                if (currentSave[i][j].isFlagged && !previousSave[i][j].isFlagged) {
+                    gBoard[i][j].isFlagged = false
+                    DOMCell.innerHTML = ''
                 }
-                if (cloneArray[cloneArray.length - 1]) {
-                } else if (cloneArray[cloneArray.length - 1][i][j].isShown) {
+                if (currentSave[i][j].isShown && !previousSave[i][j].isShown) {
                     gBoard[i][j].isShown = false
-                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('shown')
-                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).innerText = ''
-                } else if (cloneArray[cloneArray.length - 1][i][j].isMine) {
-                    document.querySelector(`td[data-i="${i}"][data-j="${j}"]`).classList.remove('explode')
+                    DOMCell.classList.remove('shown')
+                    DOMCell.innerText = ''
+                }
+                if (currentSave[i][j].isMine && currentSave[i][j].isShown && !previousSave[i][j].isShown) {
+                    DOMCell.classList.remove('explode')
                     livesLeft++
                     setCounter('life')
+                    amountOfFlags++
+                    mineCounterSpan.innerText = amountOfFlags.toString().padStart(3, '0')
+                }
+
+            } else if (currentSave) {
+                if (currentSave[i][j].isShown) {
+                    gBoard[i][j].isShown = false
+                    DOMCell.classList.remove('shown')
+                    DOMCell.innerText = ''
+                } 
+                if (currentSave[i][j].isMine && currentSave[i][j].isShown) {
+                    DOMCell.classList.remove('explode')
+                    livesLeft++
+                    setCounter('life')
+                    amountOfFlags++
+                    mineCounterSpan.innerText = amountOfFlags.toString().padStart(3, '0')
+                } 
+                if (currentSave[i][j].isFlagged) {
+                    gBoard[i][j].isFlagged = false
+                    DOMCell.innerHTML = ''
                 }
             }
         }
     } cloneArray.pop()
+    DOMBtn.innerHTML = `<img src="img/undoClick.png">`
+
+    setTimeout(() => {
+        DOMBtn.innerHTML = `<img src="img/undo.png">`
+    }, 100);
 }
+
+

@@ -30,4 +30,16 @@ Bonus tasks completed:
 + Added an Undo button
 + Added a Manual Mine mode
 
+Version 0.5
+
+- Overhauled all of the CSS
+
+Bonus tasks completed:
+
+- Added a scoreboard which keeps three high scores in local storage
+- Added Mega Hint
+- Added a Mine Exterminator
+- Added Dark Mode
+
+*The project is finished, but I still have to clean up some of the code
   
